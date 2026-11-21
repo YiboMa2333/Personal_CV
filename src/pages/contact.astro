@@ -1,10 +1,11 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Motif from '../components/Motif.astro';
-import { person } from '../data/portfolio';
+import { person, cv } from '../data/portfolio';
 ---
 <Layout title="Contact Information" description="Contact Yibo Ma in London by email, telephone, LinkedIn or GitHub." theme="contact">
   <section class="contact-page shell"><div class="page-heading"><p class="eyebrow">Let's connect</p><h1>Contact<br />Information<span class="accent">.</span></h1><p>For conversations about my projects and software engineering opportunities.</p></div>
     <div class="contact-composition"><div class="contact-list"><div><span class="eyebrow">Email</span><a class="contact-email" href={`mailto:${person.email}`}>{person.email}</a><button class="copy-button" data-copy-email={person.email}>Copy email address</button><p class="copy-status" role="status" aria-live="polite"></p></div><div><span class="eyebrow">Telephone</span><a href={`tel:${person.telephone}`}>{person.phone}</a></div><div><span class="eyebrow">Location</span><p>{person.location}</p></div><div class="profile-links"><a href={person.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a><a href={person.github} target="_blank" rel="noopener noreferrer">GitHub</a></div></div><div class="contact-art" data-tilt><Motif kind="contact" /><p class="eyebrow">Good systems begin with a connection.</p></div></div>
+    <a class="text-link" href={cv.href} download>{cv.label}</a>
   </section>
 </Layout>

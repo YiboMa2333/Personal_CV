@@ -21,7 +21,7 @@ const { title, description, theme = 'home' } = Astro.props;
     <header class="site-header shell">
       <a class="wordmark" href="/" aria-label="Yibo Ma home">ym<span>.</span></a>
       <button class="menu-button" aria-expanded="false" aria-controls="navigation">Menu <span aria-hidden="true">+</span></button>
-      <nav id="navigation" aria-label="Main navigation">{navigation.map(item => <a href={item.href} aria-current={Astro.url.pathname === item.href ? 'page' : undefined}>{item.label}</a>)}</nav>
+      <nav id="navigation" aria-label="Main navigation">{navigation.map(item => <a href={item.href} aria-current={(item.href === '/' ? Astro.url.pathname === '/' : Astro.url.pathname.startsWith(item.href)) ? 'page' : undefined}>{item.label}</a>)}</nav>
     </header>
     <main id="main" tabindex="-1"><slot /></main>
     <footer class="site-footer shell">

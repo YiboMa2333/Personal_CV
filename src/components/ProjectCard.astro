@@ -1,0 +1,12 @@
+---
+import type { Project } from '../data/portfolio';
+import ProjectVisual from './ProjectVisual.astro';
+interface Props { project: Project }
+const { project } = Astro.props;
+---
+<article id={project.id} class="project-card">
+  <a class="project-card-link" href={`/projects/${project.id}/`} aria-labelledby={`${project.id}-title`} aria-describedby={`${project.id}-summary`}>
+    <ProjectVisual id={project.id} poster />
+    <div class="project-card-copy"><h2 id={`${project.id}-title`}>{project.title}</h2><p id={`${project.id}-summary`}>{project.summary}</p><span class="card-action">View project{project.ongoing && <span> · In development</span>}</span></div>
+  </a>
+</article>

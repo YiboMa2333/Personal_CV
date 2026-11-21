@@ -1,6 +1,10 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import ProjectSection from '../components/ProjectSection.astro';
+import ProjectCard from '../components/ProjectCard.astro';
 import { projects } from '../data/portfolio';
 ---
-<Layout title="Projects" description="Seven engineering projects by Yibo Ma: accessible interaction, motion input, applied AI, native Windows software and embedded control." theme="projects"><div class="shell"><header class="page-heading"><p class="eyebrow">Selected engineering work</p><h1>Ideas, made<br />to work<span class="accent">.</span></h1><p>From sensing movement to structuring documents. A closer look at the systems, decisions and contributions behind my projects.</p></header><div class="projects-layout"><aside class="project-index"><p class="eyebrow">Explore projects</p><nav aria-label="Project index">{projects.map(project=><a href={`#${project.id}`}>{project.short}</a>)}</nav></aside><div class="projects-content">{projects.map(project=><ProjectSection project={project} />)}</div></div></div></Layout>
+<Layout title="Projects" description="Seven engineering projects by Yibo Ma: accessible interaction, motion input, applied AI, native Windows software and embedded control." theme="projects">
+  <div class="shell"><header class="page-heading gallery-heading"><p class="eyebrow">Selected engineering work</p><h1>Projects<span class="accent">.</span></h1><p>Accessible interaction, applied AI and native systems. Choose a project to explore its approach and demos.</p></header>
+    <div class="project-gallery">{projects.map(project=><ProjectCard project={project} />)}</div>
+  </div>
+</Layout>

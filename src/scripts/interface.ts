@@ -51,12 +51,12 @@ document.querySelector('[data-event-step]')?.addEventListener('click', () => {
   if (output) output.textContent = `player: ${player} · action: ${player % 2 ? 'torso_lean' : 'cardio_step'}`;
 });
 
-const sections = document.querySelectorAll<HTMLElement>('[data-section], .background-section');
+const sections = document.querySelectorAll<HTMLElement>('.background-section');
 if (sections.length) {
   const observer = new IntersectionObserver(entries => {
     const visible = entries.filter(entry => entry.isIntersecting).sort((a,b) => a.boundingClientRect.top-b.boundingClientRect.top);
     if (!visible[0]) return;
-    document.querySelectorAll('.project-index a, .local-nav a').forEach(link => {
+    document.querySelectorAll('.local-nav a').forEach(link => {
       if (link.getAttribute('href') === `#${visible[0]!.target.id}`) link.setAttribute('aria-current','location');
       else link.removeAttribute('aria-current');
     });
@@ -65,7 +65,7 @@ if (sections.length) {
 }
 
 if (!reduced.matches) {
-  const stop = inView('.section-heading, .project-intro, .background-section > h2', element => {
+  const stop = inView('.section-heading, .project-card-copy, .detail-heading, .background-section > h2', element => {
     const animation = animate(element, { opacity: [0.65,1], transform: ['translateY(12px)','translateY(0)'] }, { duration: .5 });
     cleanups.push(() => animation.stop());
   });
