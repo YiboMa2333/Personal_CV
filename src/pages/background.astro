@@ -1,0 +1,14 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { education, activities, skills } from '../data/portfolio';
+---
+<Layout title="Background" description="Yibo Ma’s education, honours, activities and technical experience." theme="background">
+  <div class="shell"><header class="page-heading"><p class="eyebrow">The person behind the projects</p><h1>Always<br />building on it<span class="accent">.</span></h1><p>Computer Science at UCL, with experience across software, systems and collaborative engineering.</p></header>
+    <nav class="local-nav" aria-label="Background sections">{[['education','Education'],['awards','Honours and Awards'],['activities','Extracurricular Activities'],['skills','Technical Skills'],['experience','Additional Experience']].map(([id,label])=><a href={`#${id}`}>{label}</a>)}</nav>
+    <section id="education" class="background-section"><h2>Education</h2><div class="timeline">{education.map(item=><article><p class="eyebrow">{item.period}</p><h3>{item.institution}</h3><p class="qualification">{item.qualification}</p><p>{item.details}</p></article>)}</div><details><summary>UCL modules and AP subjects</summary><p>The source CV is not yet available in this checkout. Exact module names, AP subjects and scores will be added from that document, with AP scores shown on their five-point scale.</p></details></section>
+    <section id="awards" class="background-section awards-section"><h2>Honours and Awards</h2><div class="editorial-list"><article><h3>AP Scholar with Distinction</h3><p>2024 and 2025</p></article><article><h3>Tetris AI · Second place</h3><p>Among approximately 200 students. <a href="/projects/#tetris">Explore the agent</a></p></article></div><p class="content-note">The complete awards list awaits the source CV.</p></section>
+    <section id="activities" class="background-section activities-section"><h2>Extracurricular Activities</h2><div class="editorial-list">{activities.map(item=><article><h3>{item.title}</h3><p>{item.text}</p></article>)}</div></section>
+    <section id="skills" class="background-section"><h2>Technical Skills</h2><p>Technologies and methods used across the projects.</p><div class="skill-grid">{skills.map(item=><div><h3>{item.group}</h3><p>{item.items.join(' · ')}</p></div>)}</div></section>
+    <section id="experience" class="background-section"><h2>Additional Experience</h2><p class="reading">Booking-form extraction applied to a shipping company’s documents, with positive user feedback. See the <a href="/projects/#document-matcher">document-matching project</a> for the technical approach.</p><p class="content-note">Further experience and detailed activity descriptions require the source CV.</p></section>
+  </div>
+</Layout>

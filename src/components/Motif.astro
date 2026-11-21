@@ -1,0 +1,20 @@
+---
+interface Props { kind: 'projects' | 'background' | 'contact' }
+const { kind } = Astro.props;
+---
+<svg class={`motif motif-${kind}`} viewBox="0 0 400 180" fill="none" aria-hidden="true">
+  {kind === 'projects' ? <>
+    <path d="M200 12 304 72v55l-104 59-104-59V72Z" stroke="currentColor" opacity=".2" />
+    <path d="m200 27 78 45-78 45-78-45 78-45Zm0 90v52m-78-97v52l78 45 78-45V72" stroke="currentColor" />
+    <path d="m148 86 52-30 52 30-52 30-52-30Zm52 30v30" stroke="currentColor" opacity=".5" />
+    <circle cx="200" cy="88" r="7" fill="currentColor" />
+  </> : kind === 'background' ? <>
+    <path d="M50 140h90V95h95V45h115" stroke="currentColor" opacity=".6" />
+    {[ [50,140], [140,95], [235,45], [350,45] ].map(([cx,cy]) => <><circle cx={cx} cy={cy} r="13" stroke="currentColor" opacity=".25" /><circle cx={cx} cy={cy} r="4" fill="currentColor" /></>)}
+    <path d="M50 158v12m90-57v57m95-107v107m115-107v107" stroke="currentColor" stroke-dasharray="2 6" opacity=".25" />
+  </> : <>
+    <path d="m200 90-130-55m130 55 122-62M200 90l137 54M200 90 74 150m126-60-5-66m5 66-4 76" stroke="currentColor" opacity=".4" />
+    <circle cx="200" cy="90" r="33" stroke="currentColor" opacity=".25" /><circle cx="200" cy="90" r="9" fill="currentColor" />
+    {[[70,35],[322,28],[337,144],[74,150],[195,24],[196,166]].map(([cx,cy])=><circle cx={cx} cy={cy} r="5" fill="currentColor" opacity=".7" />)}
+  </>}
+</svg>

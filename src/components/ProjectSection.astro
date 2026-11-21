@@ -1,0 +1,14 @@
+---
+import type { Project } from '../data/portfolio';
+import ProjectVisual from './ProjectVisual.astro';
+interface Props { project: Project }
+const { project } = Astro.props;
+---
+<article id={project.id} class="project-section" data-section>
+  <div class="project-intro"><p class="eyebrow">{project.category}{project.ongoing && <span class="ongoing"> · Ongoing development</span>}</p><h2>{project.title}</h2><p class="project-purpose">{project.purpose}</p></div>
+  <ProjectVisual id={project.id} />
+  <div class="project-explanation"><div><h3>My contribution</h3><p>{project.contribution}</p></div><div><h3>{project.ongoing ? 'Current status' : 'Result'}</h3><p>{project.outcome}</p></div></div>
+  <p class="tech-list">{project.technologies.join(' / ')}</p>
+  <details><summary>Technical approach</summary><p>{project.detail}</p></details>
+  {project.source && <a class="text-link project-source" href={project.source} target="_blank" rel="noopener noreferrer">{project.sourceLabel ?? `View ${project.short} repository`}</a>}
+</article>
