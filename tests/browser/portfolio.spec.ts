@@ -173,3 +173,18 @@ for(const width of [390,1440]) test(`Input Overlay native recordings, settings a
  await expect(page.getByRole('link',{name:'Windows build and test workflow'})).toHaveAttribute('href','https://github.com/YiboMa2333/Input_Overlay_on_desktop/blob/main/.github/workflows/windows-x64.yml');
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
 });
+
+for(const width of [390,1440]) test(`Sun-glare paper link, images and keyboard viewer at ${width}px`,async({page})=>{
+ await page.setViewportSize({width,height:900});await page.emulateMedia({reducedMotion:'reduce'});await page.goto('/projects/');await page.getByRole('link',{name:'Sun-Glare Detection Model',exact:true}).click();await page.reload();
+ await expect(page.locator('.project-publication')).toContainText('Yibo Ma');
+ await expect(page.getByRole('link',{name:/Read paper · DOI:/})).toHaveAttribute('href','https://doi.org/10.56028/aetr.12.1.1222.2024');
+ await expect(page.locator('[data-enlarge]')).toHaveCount(5);
+ await expect(page.locator('.media-item figcaption').first()).toContainText('not the model’s overall accuracy');
+ for(const button of await page.locator('[data-enlarge]').all()){
+  await button.scrollIntoViewIfNeeded();await expect.poll(()=>button.locator('img').evaluate(image=>(image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+  await button.focus();await page.keyboard.press('Enter');await expect(page.getByRole('dialog')).toBeVisible();
+  await expect.poll(()=>page.getByRole('dialog').locator('img').evaluate(image=>(image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+  await page.keyboard.press('Escape');await expect(button).toBeFocused();
+ }
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+});

@@ -56,6 +56,8 @@ Asset resolution and image optimisation live in [src/data/media.ts](src/data/med
 
 The image viewer uses native `<dialog>` for focus trapping and Escape dismissal, restores focus to the opening button, and provides a keyboard-scrollable full-resolution image. With JavaScript disabled, original-image links are available below the thumbnails. A `notes.md` may record proposed captions or attribution but is not parsed automatically. No project source links are invented; Tetris links to its public gameplay-demo repository, where coursework source is intentionally unavailable.
 
+The Sun-Glare Detection page links to Yibo Ma’s paper through [DOI 10.56028/aetr.12.1.1222.2024](https://doi.org/10.56028/aetr.12.1.1222.2024). Authorship, title and the qualitative findings were checked against the [publisher’s abstract](https://madison-proceedings.com/index.php/aetr/article/view/2968). Its media records include a supplied detector-output image and four source photographs; the visible detection confidence is not presented as model accuracy. The abstract pipeline remains clearly labelled as an illustration.
+
 ## Cloudflare Pages
 
 1. Commit the source and `package-lock.json`, then push to your GitHub repository when ready.

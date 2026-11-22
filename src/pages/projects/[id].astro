@@ -13,6 +13,7 @@ const { project } = Astro.props;
     <header class="page-heading detail-heading"><p class="eyebrow">{project.category}{project.ongoing && <span class="ongoing"> · Ongoing development</span>}</p><h1>{project.title}<span class="accent">.</span></h1><p>{project.purpose}</p>
       <div class="project-resource-links">{project.source && <a class="text-link" href={project.source} target="_blank" rel="noopener noreferrer">{project.sourceLabel ?? 'View source code on GitHub'}</a>}{project.links?.map(link=><a class="text-link" href={link.href} target="_blank" rel="noopener noreferrer">{link.label}</a>)}</div>
     </header>
+    {project.publication && <section class="project-publication" aria-labelledby="publication-title"><p class="eyebrow">Research paper</p><h2 id="publication-title">{project.publication.title}</h2><p class="publication-credit">{project.publication.author} · {project.publication.venue}</p><p>{project.publication.summary}</p><a class="text-link" href={project.publication.url} target="_blank" rel="noopener noreferrer">Read paper · DOI: {project.publication.doi}</a></section>}
     <ProjectMedia project={project} />
     {project.workflow && <section class="project-workflow" aria-labelledby="workflow-title"><h2 id="workflow-title">How it works</h2><ol>{project.workflow.map(step=><li><h3>{step.title}</h3><p>{step.description}</p></li>)}</ol></section>}
     <section class="detail-approach" aria-labelledby="approach-title"><h2 id="approach-title">The idea</h2><ProjectVisual id={project.id} />

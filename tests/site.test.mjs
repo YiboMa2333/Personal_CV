@@ -33,7 +33,12 @@ test('Tetris uploads are linked while empty projects retain a useful fallback',a
  assert.match(tetris,/poster="[^"]+demo-poster/);assert.match(tetris,/width="460" height="762"/);
  assert.match(tetris,/alt="Projected coursework leaderboard with Yibo Ma listed in second place\." width="1705" height="1279"/);
  assert.match(tetris,/<dialog id="image-viewer"/);
- const empty=await readFile('dist/projects/sun-glare/index.html','utf8');assert.match(empty,/Project recordings and screenshots will be added here/);assert.doesNotMatch(empty,/<video/);
+ const empty=await readFile('dist/projects/multiplay/index.html','utf8');assert.match(empty,/Project recordings and screenshots will be added here/);assert.doesNotMatch(empty,/<video/);
+});
+test('sun-glare paper DOI and five supplied images are included',async()=>{
+ const html=await readFile('dist/projects/sun-glare/index.html','utf8');assert.match(html,/href="https:\/\/doi.org\/10.56028\/aetr.12.1.1222.2024"/);
+ assert.match(html,/Evaluating the Impact of Online Database Integration/);assert.match(html,/not the model’s overall accuracy/);
+ assert.equal((html.match(/data-enlarge /g)||[]).length,5);assert.doesNotMatch(html,/Project recordings and screenshots will be added here/);
 });
 test('Input Overlay includes native workflow, three recordings and four screenshots',async()=>{
  const html=await readFile('dist/projects/input-overlay/index.html','utf8');

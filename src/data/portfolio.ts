@@ -24,6 +24,7 @@ export interface Project {
   media?: ProjectMediaRecord[];
   workflow?: { title: string; description: string }[];
   links?: { label: string; href: string }[];
+  publication?: { title: string; author: string; venue: string; doi: string; url: string; summary: string };
 }
 export const projects: Project[] = [
   { id: 'super-happy-space', title: 'Super Happy Space 2.0', short: 'Super Happy Space', category: 'Accessible play · Local AI', ongoing: true,
@@ -102,12 +103,25 @@ export const projects: Project[] = [
     technologies: ['Arduino', 'C++', 'Analogue sensing', 'Proportional control'],
     detail: 'The control path runs from analogue sensing to voltage-to-temperature conversion, then from temperature error to a proportional heating response. The supplied circuit sketches show thermistor sensing and a MOSFET-controlled heater. My implemented contribution was the heating-control subsystem; no unverified accuracy, stability or response-time measurement is claimed.' },
   { id: 'sun-glare', title: 'Sun-Glare Detection Model', short: 'Sun-glare detection', category: 'Computer vision · Dataset annotation',
-    summary: 'A YOLO detector trained on sun-glare images annotated in Roboflow.', mediaFolder: 'Sun-Glare-Detection-Model',
-    purpose: 'Training an object detector to identify sun glare in images.',
-    contribution: 'Annotated sun-glare images in Roboflow and trained a YOLO detector.',
-    outcome: 'Completed annotation and model training. No unverified detection-accuracy metric is presented.',
-    technologies: ['Roboflow', 'YOLO', 'Image annotation'],
-    detail: 'Image annotation defines the training targets used by the detector. The visual is an abstract explanation of annotation, training and detection; it is not genuine imagery or model output.' },
+    summary: 'YOLO-based glare detection in a school gym, with a paper examining how training-data sources affect performance.', mediaFolder: 'Sun-Glare-Detection-Model',
+    purpose: 'Detecting sun glare in gym images and investigating how local and online training data affect the detector.',
+    contribution: 'Annotated sun-glare images in Roboflow, trained a YOLO object detector and authored a case study comparing local, online and combined training data.',
+    outcome: 'Completed annotation and model training, with the case study available through the paper DOI. The supplied detection example illustrates a prediction, rather than an overall accuracy measurement.',
+    technologies: ['Roboflow', 'YOLO', 'Image annotation', 'Object detection', 'Training-data comparison'],
+    detail: 'Annotation defines the glare regions used for detector training. The paper investigates data-source choices for the school-gym setting. Supplied source photographs and a detector-output example appear above; the annotation–training–detection visual below is an abstract illustration, not model output.',
+    publication: {
+      title: 'Evaluating the Impact of Online Database Integration on the Performance of a Sun Glare Detection Model: A Case Study from a Chinese High School Gym',
+      author: 'Yibo Ma', venue: 'Advances in Engineering Technology Research', doi: '10.56028/aetr.12.1.1222.2024', url: 'https://doi.org/10.56028/aetr.12.1.1222.2024',
+      summary: 'The abstract reports the strongest detection performance with local training data. Combining local and online images performed slightly worse, but reached high performance in fewer epochs and showed greater stability in this case study.',
+    },
+    media: [
+      { kind: 'image', src: '/media/Sun-Glare-Detection-Model/detected.png', alt: 'Detector-output image of a gym with a blue glare bounding box and a displayed score of 0.69.', caption: 'Supplied detector output: a glare region is marked with a 0.69 detection confidence score. This score is not the model’s overall accuracy.' },
+      { kind: 'image', src: '/media/Sun-Glare-Detection-Model/label (1).jpg', alt: 'Sunlight entering a gym through windows behind a basketball backboard.', caption: 'Source photograph: direct sunlight near the basketball backboard.' },
+      { kind: 'image', src: '/media/Sun-Glare-Detection-Model/label (2).jpg', alt: 'Wide view of a gym with sunlight entering through roof glazing and reflecting on the court.', caption: 'Source photograph: overhead sunlight and reflections across the gym floor.' },
+      { kind: 'image', src: '/media/Sun-Glare-Detection-Model/label (3).jpg', alt: 'Gym interior showing strong rays of sunlight through windows and bright reflections on the floor.', caption: 'Source photograph: window glare and reflected sunlight viewed across the court.' },
+      { kind: 'image', src: '/media/Sun-Glare-Detection-Model/label (4).jpg', alt: 'Another view of the gym with direct sun rays beside a basketball backboard and light across the court.', caption: 'Source photograph: the glare source and surrounding court from another viewpoint.' },
+    ],
+  },
 ];
 export const education = [
   { institution: 'University College London', period: '2025–Present', qualification: 'BSc Computer Science', details: 'Expected upper second-class honours based on first-year results.' },
