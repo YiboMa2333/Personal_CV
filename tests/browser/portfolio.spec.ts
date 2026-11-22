@@ -124,3 +124,26 @@ for(const width of [390,1440]) test(`image enlargement, keyboard scrolling and f
  await page.keyboard.press('Space');await expect(dialog).toBeVisible();await close.click();await expect(opener).toBeFocused();
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
 });
+
+for(const width of [390,1440]) test(`bioreactor image sequence and accessible enlargement at ${width}px`,async({page})=>{
+ await page.setViewportSize({width,height:900});await page.emulateMedia({reducedMotion:'reduce'});
+ await page.goto('/projects/');await page.getByRole('link',{name:'Automated Bioreactor Control System',exact:true}).click();
+ await expect(page).toHaveURL(/\/projects\/bioreactor\//);await page.reload();
+ await expect(page.locator('.media-item')).toHaveCount(4);await expect(page.locator('video')).toHaveCount(0);
+ const captions=page.locator('.media-item figcaption');
+ await expect(captions.nth(0)).toContainText('System architecture:');await expect(captions.nth(1)).toContainText('Temperature sensing:');await expect(captions.nth(2)).toContainText('Heater control:');await expect(captions.nth(3)).toContainText('separate from the recreated');
+ for(const button of await page.locator('[data-enlarge]').all()){
+  const image=button.locator('img');await button.scrollIntoViewIfNeeded();
+  await expect.poll(()=>image.evaluate(element=>(element as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+  expect(Number(await image.getAttribute('width'))).toBeGreaterThan(0);expect(Number(await image.getAttribute('height'))).toBeGreaterThan(0);await expect(image).toHaveAttribute('loading','lazy');
+  await button.focus();await page.keyboard.press('Enter');
+  const dialog=page.getByRole('dialog',{name:'Project image'});await expect(dialog).toBeVisible();
+  await expect.poll(()=>dialog.locator('img').evaluate(element=>(element as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+  await dialog.getByRole('button',{name:'Show actual size'}).click();await expect(dialog.getByRole('button',{name:'Fit image'})).toHaveAttribute('aria-pressed','true');
+  await page.keyboard.press('Escape');await expect(dialog).not.toBeVisible();await expect(button).toBeFocused();
+ }
+ await expect(page.getByRole('heading',{name:'My contribution',exact:true})).toBeVisible();
+ await expect(page.getByRole('heading',{name:'Technology and methods',exact:true})).toBeVisible();
+ await expect(page.locator('.detail-approach')).toContainText('recreated response curve below is illustrative');
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+});
