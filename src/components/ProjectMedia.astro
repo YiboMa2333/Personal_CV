@@ -9,13 +9,13 @@ const media = await getProjectMedia(project);
   <div class="section-heading"><h2 id="media-title">Inside the project</h2><p>Images and demonstrations.</p></div>
   <div class="media-gallery">{media.map((item,index)=><figure class:list={['media-item', { 'media-video': item.kind === 'video' }]}>
     {item.kind === 'video' ? <>
-      <video controls playsinline preload="none" poster={item.posterUrl} width={item.width} height={item.height} style={`aspect-ratio:${item.width}/${item.height};--video-ratio:${item.width/item.height}`} aria-label={item.caption} aria-describedby={`media-caption-${index}`}>
+      <video controls playsinline preload="none" poster={item.posterUrl} width={item.width} height={item.height} style={`aspect-ratio:${item.width}/${item.height};--video-ratio:${item.width/item.height};--video-width:${item.width}px`} aria-label={item.caption} aria-describedby={`media-caption-${index}`}>
         <source src={item.url} type={item.mime} />
         {item.captions && <track kind="captions" src={item.captionUrl} srclang={item.captions.language} label={item.captions.label} default />}
         <p>Your browser cannot play this video. <a href={item.url}>Download the video</a>.</p>
       </video>
       {item.transcriptUrl && <a class="transcript-link" href={item.transcriptUrl}>Read recording transcript</a>}
-    </> : <><button type="button" class="media-enlarge" data-src={item.original} data-enlarge aria-haspopup="dialog" aria-controls="image-viewer" data-caption={item.caption} data-alt={item.alt} data-width={item.width} data-height={item.height} aria-label={`Enlarge image: ${item.alt}`}>
+    </> : <><button type="button" class="media-enlarge" style={`--image-width:${item.width}px`} data-src={item.original} data-enlarge aria-haspopup="dialog" aria-controls="image-viewer" data-caption={item.caption} data-alt={item.alt} data-width={item.width} data-height={item.height} aria-label={`Enlarge image: ${item.alt}`}>
       <img src={item.url} alt={item.alt} width={item.width} height={item.height} loading="lazy" decoding="async" />
       <span class="enlarge-hint">Enlarge image</span>
     </button><noscript><a href={item.original}>Open original image</a></noscript></>}

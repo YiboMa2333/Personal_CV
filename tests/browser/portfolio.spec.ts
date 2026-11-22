@@ -147,3 +147,29 @@ for(const width of [390,1440]) test(`bioreactor image sequence and accessible en
  await expect(page.locator('.detail-approach')).toContainText('recreated response curve below is illustrative');
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
 });
+
+for(const width of [390,1440]) test(`Input Overlay native recordings, settings and workflow at ${width}px`,async({page})=>{
+ await page.setViewportSize({width,height:900});await page.emulateMedia({reducedMotion:'reduce'});await page.goto('/projects/input-overlay/');await page.reload();
+ const videos=page.locator('video');await expect(videos).toHaveCount(3);
+ for(let index=0;index<3;index++){
+  const video=videos.nth(index);await expect(video).toHaveAttribute('controls','');await expect(video).toHaveAttribute('preload','none');await expect(video).not.toHaveAttribute('autoplay');
+  const poster=await page.request.get((await video.getAttribute('poster'))!);expect(poster.status()).toBe(200);
+  expect(await video.evaluate(element=>(element as HTMLVideoElement).paused)).toBe(true);
+  await video.focus();await page.keyboard.press('Space');
+  await expect.poll(()=>video.evaluate(element=>(element as HTMLVideoElement).currentTime),{timeout:15000}).toBeGreaterThan(0);
+  expect(await video.evaluate(element=>{const video=element as HTMLVideoElement;return video.videoWidth===Number(video.getAttribute('width'))&&video.videoHeight===Number(video.getAttribute('height'));})).toBe(true);
+  if(index>0)expect(await videos.nth(index-1).evaluate(element=>(element as HTMLVideoElement).paused)).toBe(true);
+ }
+ await expect(page.locator('[data-enlarge]')).toHaveCount(4);
+ for(const button of await page.locator('[data-enlarge]').all()){
+  await button.scrollIntoViewIfNeeded();await expect.poll(()=>button.locator('img').evaluate(image=>(image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+  await button.focus();await page.keyboard.press('Enter');await expect(page.getByRole('dialog')).toBeVisible();
+  await expect.poll(()=>page.getByRole('dialog').locator('img').evaluate(image=>(image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+  await page.keyboard.press('Escape');await expect(button).toBeFocused();
+ }
+ expect(await videos.last().evaluate(element=>(element as HTMLVideoElement).paused)).toBe(true);
+ await expect(page.locator('.project-workflow li')).toHaveCount(4);
+ await expect(page.getByRole('link',{name:'Preview release on GitHub'})).toHaveAttribute('href','https://github.com/YiboMa2333/Input_Overlay_on_desktop/releases/tag/v0.1.0-preview.1');
+ await expect(page.getByRole('link',{name:'Windows build and test workflow'})).toHaveAttribute('href','https://github.com/YiboMa2333/Input_Overlay_on_desktop/blob/main/.github/workflows/windows-x64.yml');
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+});

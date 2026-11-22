@@ -22,6 +22,8 @@ export interface Project {
   purpose: string; contribution: string; outcome: string; technologies: string[];
   detail: string; source?: string; sourceLabel?: string;
   media?: ProjectMediaRecord[];
+  workflow?: { title: string; description: string }[];
+  links?: { label: string; href: string }[];
 }
 export const projects: Project[] = [
   { id: 'super-happy-space', title: 'Super Happy Space 2.0', short: 'Super Happy Space', category: 'Accessible play · Local AI', ongoing: true,
@@ -46,13 +48,33 @@ export const projects: Project[] = [
     technologies: ['Python', 'PaddleOCR', 'PyMuPDF', 'LibreOffice', 'Baidu Qianfan API', 'ERNIE 4.5 Turbo', 'JSON', 'PySide6'],
     detail: 'Document conversion and OCR make heterogeneous source files available to the field-matching stage. Structured JSON gives the downstream application a consistent representation. The preview uses invented sample data, not company records.',
     source: 'https://github.com/YiboMa2333/Language-Model-Based-Label-and-Value-Matcher' },
-  { id: 'input-overlay', title: 'Input Overlay Desktop', short: 'Input Overlay', category: 'Native Windows · Systems programming',
+  { id: 'input-overlay', title: 'Input Overlay Desktop', short: 'Input Overlay', category: 'Native Windows · Systems programming', ongoing: true,
+    media: [
+      { kind: 'video', src: '/media/Input-Overlay-Desktop/demo_Compact.mp4', poster: '/media/Input-Overlay-Desktop/demo_Compact-poster.webp', width: 436, height: 276, caption: 'Compact gaming layout: the native overlay highlights keyboard and mouse input as it is pressed.' },
+      { kind: 'video', src: '/media/Input-Overlay-Desktop/demo_awsd+modifiers.mp4', poster: '/media/Input-Overlay-Desktop/demo_awsd_modifiers-poster.webp', width: 366, height: 190, caption: 'WASD + modifiers layout: a focused arrangement for movement keys, modifiers and the mouse.' },
+      { kind: 'video', src: '/media/Input-Overlay-Desktop/demo_Single_Row.mp4', poster: '/media/Input-Overlay-Desktop/demo_Single_Row-poster.webp', width: 718, height: 164, caption: 'Single row layout: a horizontal arrangement showing live input in a low-height overlay.' },
+      { kind: 'image', src: '/media/Input-Overlay-Desktop/dashboard.png', alt: 'Input Overlay tray menu with settings, edit, lock, reset, startup and exit commands.', caption: 'Tray controls: open Settings, edit or lock the overlay, reset its position and size, or exit the application.' },
+      { kind: 'image', src: '/media/Input-Overlay-Desktop/Setting_Appearance.png', alt: 'Native Appearance settings for pressed and border colours, opacity, font, scale and spacing.', caption: 'Appearance settings: adjust colours, opacity, font, scale and spacing, then Apply to save.' },
+      { kind: 'image', src: '/media/Input-Overlay-Desktop/Settting_Layout.png', alt: 'Native Layout settings with Compact gaming, WASD + modifiers and Single row presets and per-key position controls.', caption: 'Layout settings: select a preset, position or hide existing keys, and show or hide the mouse diagram.' },
+      { kind: 'image', src: '/media/Input-Overlay-Desktop/Layout_Behavior.png', alt: 'Native Behavior settings for topmost display, click-through mode, aspect ratio, startup and the edit shortcut.', caption: 'Behaviour settings: configure topmost display, Edit/Locked mode, aspect-ratio lock, optional startup and the global shortcut.' },
+    ],
     summary: 'A native Windows keyboard and mouse overlay with editable layouts and click-through display.', mediaFolder: 'Input-Overlay-Desktop',
-    purpose: 'A native Windows adaptation of an open-source input overlay for live keyboard and mouse visualisation.',
-    contribution: 'Implemented a click-through display, editable layouts and system-tray controls using native Windows input and drawing APIs.',
-    outcome: 'A desktop adaptation with live input visualisation. The focused web preview demonstrates the idea without reading system-wide input.',
+    purpose: 'Visualising live keyboard and mouse input directly on the Windows desktop, without OBS. A native adaptation of the open-source input-overlay project.',
+    contribution: 'Adapted the input overlay into a C++20 Windows application with Raw Input capture, Direct2D/DirectWrite rendering, click-through and editable modes, system-tray controls and native settings for appearance, layout and behaviour.',
+    outcome: 'Independent project under development, with a Windows x64 preview release available. The recordings show the native application in three layouts. Remaining work includes gamepad support, mixed-DPI monitor testing and broader performance validation.',
     technologies: ['C++20', 'Win32 Raw Input', 'Direct2D', 'DirectWrite', 'CMake', 'CTest'],
-    detail: 'Win32 Raw Input supplies keyboard and mouse events, while Direct2D and DirectWrite draw the overlay. The browser illustration only responds when its preview has focus; it is not the native application.',
+    detail: 'Raw Input events update bounded held-key, button and wheel state independently of rendering. A timer redraws changed input state using Direct2D and DirectWrite; settings and geometry are persisted in a validated INI file. The repository CI configures MSVC and LLVM-MinGW builds, runs noninteractive CTest checks and validates packaging. Portable ZIP upload is restricted to an explicitly requested, gated main-branch workflow run. The adaptation is GPL-2.0-only. The focus-only browser illustration below is recreated and does not capture desktop input.',
+    workflow: [
+      { title: 'Open the tray controls', description: 'Launch the application and use its notification-area icon. The overlay starts locked, displaying live input while allowing clicks to reach the application underneath.' },
+      { title: 'Position the overlay', description: 'Choose Edit Overlay from the tray, or use Ctrl+Alt+F8. Move the keyboard/mouse group and resize it with the selection handles.' },
+      { title: 'Customise and apply', description: 'Open Settings to adjust Appearance, Layout and Behavior. Choose Compact gaming, WASD + modifiers or Single row, then Apply to save changes.' },
+      { title: 'Lock and use', description: 'Choose Lock Overlay to restore click-through display. Closing Settings leaves the overlay running; choose Exit from the tray to quit.' },
+    ],
+    links: [
+      { label: 'Preview release on GitHub', href: 'https://github.com/YiboMa2333/Input_Overlay_on_desktop/releases/tag/v0.1.0-preview.1' },
+      { label: 'Settings and customisation guide', href: 'https://github.com/YiboMa2333/Input_Overlay_on_desktop/blob/main/docs/CUSTOMIZATION.md' },
+      { label: 'Windows build and test workflow', href: 'https://github.com/YiboMa2333/Input_Overlay_on_desktop/blob/main/.github/workflows/windows-x64.yml' },
+    ],
     source: 'https://github.com/YiboMa2333/Input_Overlay_on_desktop' },
   { id: 'tetris', title: 'Tetris AI', short: 'Tetris AI', category: 'Search · Heuristic evaluation',
     media: [
