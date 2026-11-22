@@ -1,4 +1,5 @@
 ---
+import { sitePath } from '../utils/paths';
 import { navigation, person } from '../data/portfolio';
 import '../styles/global.css';
 import '@fontsource-variable/bricolage-grotesque';
@@ -13,21 +14,21 @@ const { title, description, theme = 'home' } = Astro.props;
     <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} /><meta name="theme-color" content="#0B1018" />
     <meta property="og:title" content={`${title} · Yibo Ma`} /><meta property="og:description" content={description} />
-    <meta property="og:type" content="website" /><link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta property="og:type" content="website" /><link rel="icon" type="image/svg+xml" href={sitePath('/favicon.svg')} />
     <title>{title} · Yibo Ma</title>
   </head>
   <body data-theme={theme}>
     <a class="skip" href="#main">Skip to content</a>
     <header class="site-header shell">
-      <a class="wordmark" href="/" aria-label="Yibo Ma home">ym<span>.</span></a>
+      <a class="wordmark" href={sitePath('/')} aria-label="Yibo Ma home">ym<span>.</span></a>
       <button class="menu-button" aria-expanded="false" aria-controls="navigation">Menu <span aria-hidden="true">+</span></button>
-      <nav id="navigation" aria-label="Main navigation">{navigation.map(item => <a href={item.href} aria-current={(item.href === '/' ? Astro.url.pathname === '/' : Astro.url.pathname.startsWith(item.href)) ? 'page' : undefined}>{item.label}</a>)}</nav>
+      <nav id="navigation" aria-label="Main navigation">{navigation.map(item => <a href={sitePath(item.href)} aria-current={(item.href === '/' ? Astro.url.pathname === sitePath('/') : Astro.url.pathname.startsWith(sitePath(item.href))) ? 'page' : undefined}>{item.label}</a>)}</nav>
     </header>
     <main id="main" tabindex="-1"><slot /></main>
     <footer class="site-footer shell">
       <div class="footer-heading"><span class="eyebrow">Keep in touch</span><h2>Contact Information</h2></div>
       <div class="footer-details"><a class="email" href={`mailto:${person.email}`}>{person.email}</a><a href={`tel:${person.telephone}`}>{person.phone}</a><span>{person.location}</span></div>
-      <div class="footer-bottom"><span>Yibo Ma · Engineering portfolio</span><div><a href={person.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a><a href={person.github} target="_blank" rel="noopener noreferrer">GitHub</a><a href="/contact/">Contact Information</a></div></div>
+      <div class="footer-bottom"><span>Yibo Ma · Engineering portfolio</span><div><a href={person.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a><a href={person.github} target="_blank" rel="noopener noreferrer">GitHub</a><a href={sitePath('/contact/')}>Contact Information</a></div></div>
     </footer>
     <script>import '../scripts/interface';</script>
   </body>

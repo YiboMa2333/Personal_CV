@@ -1,4 +1,5 @@
 ---
+import { sitePath } from '../utils/paths';
 import Layout from '../layouts/Layout.astro';
 import Motif from '../components/Motif.astro';
 import { cv } from '../data/portfolio';
@@ -6,15 +7,15 @@ import { cv } from '../data/portfolio';
 <Layout title="Yibo Ma — Engineering portfolio" description="UCL Computer Science student building accessible interactive systems, native software and applied AI.">
   <section class="hero shell" aria-labelledby="hero-title">
     <div class="hero-art" data-particles aria-hidden="true"><div class="orb-fallback"></div><canvas></canvas><span class="orbit orbit-one"></span><span class="orbit orbit-two"></span></div>
-    <div class="hero-copy"><p class="eyebrow">Computer Science at UCL</p><h1 id="hero-title">Yibo Ma<span class="accent">.</span></h1><p class="hero-statement">From human movement<br />to meaningful software.</p><p class="hero-description">I build across accessible interaction, applied AI and native systems — connecting technical ideas to software people can use.</p><a class="text-link" href="/projects/">Explore my engineering work <span aria-hidden="true">↗</span></a></div>
+    <div class="hero-copy"><p class="eyebrow">Computer Science at UCL</p><h1 id="hero-title">Yibo Ma<span class="accent">.</span></h1><p class="hero-statement">From human movement<br />to meaningful software.</p><p class="hero-description">I build across accessible interaction, applied AI and native systems — connecting technical ideas to software people can use.</p><a class="text-link" href={sitePath('/projects/')}>Explore my engineering work <span aria-hidden="true">↗</span></a></div>
     <div class="hero-caption"><span>Software · Systems · Interaction</span><span>London, UK</span></div>
   </section>
-  <div class="shell cv-download"><a class="text-link" href={cv.href} download>{cv.label}</a></div>
+  <div class="shell cv-download"><a class="text-link" href={sitePath(cv.href)} download>{cv.label}</a></div>
   <section class="destinations shell" aria-labelledby="explore-title"><div class="section-heading"><h2 id="explore-title">A closer look.</h2><p>Work, background and a way to connect.</p></div>
     <div class="destination-grid">
-      <a class="destination project-destination" href="/projects/" data-tilt><span class="eyebrow">Engineering in practice</span><Motif kind="projects" /><div><h3>Projects</h3><p>Accessible games, motion-input infrastructure, document AI and native software.</p><span class="destination-link">Explore the work</span></div></a>
-      <a class="destination background-destination" href="/background/" data-tilt><span class="eyebrow">Learning & involvement</span><Motif kind="background" /><div><h3>Background</h3><p>Computer Science at UCL, academic recognition and activities beyond the code.</p><span class="destination-link">Meet the person</span></div></a>
-      <a class="destination contact-destination" href="/contact/" data-tilt><span class="eyebrow">Start a conversation</span><Motif kind="contact" /><div><h3>Contact Information</h3><p>Based in London. Find my email, telephone and professional profiles.</p><span class="destination-link">Get in touch</span></div></a>
+      <a class="destination project-destination" href={sitePath('/projects/')} data-tilt><span class="eyebrow">Engineering in practice</span><Motif kind="projects" /><div><h3>Projects</h3><p>Accessible games, motion-input infrastructure, document AI and native software.</p><span class="destination-link">Explore the work</span></div></a>
+      <a class="destination background-destination" href={sitePath('/background/')} data-tilt><span class="eyebrow">Learning & involvement</span><Motif kind="background" /><div><h3>Background</h3><p>Computer Science at UCL, academic recognition and activities beyond the code.</p><span class="destination-link">Meet the person</span></div></a>
+      <a class="destination contact-destination" href={sitePath('/contact/')} data-tilt><span class="eyebrow">Start a conversation</span><Motif kind="contact" /><div><h3>Contact Information</h3><p>Based in London. Find my email, telephone and professional profiles.</p><span class="destination-link">Get in touch</span></div></a>
     </div>
   </section>
   <script>import '../scripts/particles';</script>

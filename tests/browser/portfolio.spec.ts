@@ -5,7 +5,7 @@ for(const width of [390,820,1440]) test(`routes, refresh and overflow at ${width
  const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
  page.on('response',response=>{if(response.status()>=400)errors.push(`${response.status()} ${response.url()}`);});
  page.on('console',message=>{if(message.type()==='error')errors.push(message.text());});
- for(const route of ['/','/projects/','/background/','/contact/',...['super-happy-space','multiplay','document-matcher','input-overlay','tetris','bioreactor','sun-glare'].map(id=>`/projects/${id}/`)]){
+ for(const route of ['/Personal_CV/','/Personal_CV/projects/','/Personal_CV/background/','/Personal_CV/contact/',...['super-happy-space','multiplay','document-matcher','input-overlay','tetris','bioreactor','sun-glare'].map(id=>`/Personal_CV/projects/${id}/`)]){
   const response=await page.goto(route);expect(response?.status()).toBe(200);await page.reload();
   await expect(page.locator('h1')).toBeVisible();
   await expect(page.locator('footer')).toContainText('Contact Information');
@@ -14,7 +14,7 @@ for(const width of [390,820,1440]) test(`routes, refresh and overflow at ${width
  expect(errors).toEqual([]);
 });
 test('mobile keyboard navigation and menu escape',async({page})=>{
- await page.setViewportSize({width:390,height:844});await page.goto('/');
+ await page.setViewportSize({width:390,height:844});await page.goto('/Personal_CV/');
  await page.keyboard.press('Tab');await expect(page.getByText('Skip to content')).toBeFocused();
  await page.keyboard.press('Enter');await expect(page.locator('main')).toBeFocused();
  const menu=page.getByRole('button',{name:'Menu'});await menu.focus();await page.keyboard.press('Enter');
@@ -23,7 +23,7 @@ test('mobile keyboard navigation and menu escape',async({page})=>{
  await menu.click();await page.getByRole('navigation',{name:'Main navigation'}).getByRole('link',{name:'Projects',exact:true}).click();await expect(page).toHaveURL(/projects/);
 });
 test('copy email success and failure feedback',async({page})=>{
- await page.goto('/contact/');
+ await page.goto('/Personal_CV/contact/');
  await page.evaluate(()=>Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async(text:string)=>{if(text!=='yibo.ma.25@ucl.ac.uk')throw new Error('Incorrect email');}}}));
  await page.getByRole('button',{name:'Copy email address'}).click();await expect(page.getByRole('status')).toContainText('Email address copied');
  await page.evaluate(()=>Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async()=>{throw new Error('denied');}}}));
@@ -32,7 +32,7 @@ test('copy email success and failure feedback',async({page})=>{
  await expect(page.locator('main a[href="tel:+447960513809"]')).toBeVisible();
 });
 test('project navigation, focus-only keyboard input and event stepping',async({page})=>{
- await page.goto('/projects/');await page.locator('.project-card').getByRole('link',{name:'Input Overlay Desktop',exact:true}).click();
+ await page.goto('/Personal_CV/projects/');await page.locator('.project-card').getByRole('link',{name:'Input Overlay Desktop',exact:true}).click();
  await expect(page).toHaveURL(/\/projects\/input-overlay\//);
  const preview=page.locator('[data-keyboard]');await preview.focus();await page.keyboard.down('w');await expect(preview.locator('[data-key="w"]')).toHaveClass(/pressed/);await page.keyboard.up('w');await expect(preview.locator('[data-key="w"]')).not.toHaveClass(/pressed/);
  await page.keyboard.press('Tab');await page.keyboard.down('w');await expect(preview.locator('[data-key="w"]')).not.toHaveClass(/pressed/);await page.keyboard.up('w');
@@ -41,7 +41,7 @@ test('project navigation, focus-only keyboard input and event stepping',async({p
  await page.getByText('Technical approach',{exact:true}).click();await expect(page.locator('.detail-approach details')).toHaveAttribute('open','');
 });
 test('reduced motion and unavailable graphics preserve content',async({page})=>{
- await page.emulateMedia({reducedMotion:'reduce'});await page.goto('/');
+ await page.emulateMedia({reducedMotion:'reduce'});await page.goto('/Personal_CV/');
  await expect(page.locator('[data-particles]')).not.toHaveAttribute('data-ready');
  expect(await page.locator('.beat-bars').count()).toBe(0);
  await expect(page.getByRole('link',{name:/Explore the work/})).toBeVisible();
@@ -51,7 +51,7 @@ test('reduced motion and unavailable graphics preserve content',async({page})=>{
  await expect(page.locator('h1')).toContainText('Yibo Ma');
 });
 test('one graphics canvas, motion changes and context loss fallback',async({page})=>{
- await page.goto('/');await expect(page.locator('[data-particles]')).toHaveAttribute('data-ready','');
+ await page.goto('/Personal_CV/');await expect(page.locator('[data-particles]')).toHaveAttribute('data-ready','');
  await expect(page.locator('canvas')).toHaveCount(1);
  await page.emulateMedia({reducedMotion:'reduce'});await expect(page.locator('[data-particles]')).not.toHaveAttribute('data-ready');
  await page.emulateMedia({reducedMotion:'no-preference'});await expect(page.locator('[data-particles]')).toHaveAttribute('data-ready','');
@@ -61,21 +61,21 @@ test('one graphics canvas, motion changes and context loss fallback',async({page
  await expect(page.getByRole('navigation',{name:'Main navigation'}).getByRole('link',{name:'Projects',exact:true})).toBeVisible();
 });
 test('CV module disclosure and genuine DOCX download',async({page})=>{
- await page.goto('/background/');
+ await page.goto('/Personal_CV/background/');
  await page.getByText('Explore UCL modules',{exact:true}).click();
  await expect(page.getByText('Principles of Programming',{exact:true})).toBeVisible();
  await expect(page.locator('.module-grid li')).toHaveCount(15);
  await page.getByText('Explore UCL modules',{exact:true}).focus();
  await page.keyboard.press('Enter');await expect(page.locator('.education-detail')).not.toHaveAttribute('open');
- await page.goto('/');
+ await page.goto('/Personal_CV/');
  const downloadEvent=page.waitForEvent('download');
  await page.getByRole('link',{name:'Download CV (DOCX)',exact:true}).click();
  const download=await downloadEvent;expect(download.suggestedFilename()).toBe('Yibo_Ma_CV.docx');expect(await download.failure()).toBeNull();
- const response=await page.request.get('/downloads/Yibo_Ma_CV.docx');expect(response.status()).toBe(200);expect((await response.body()).subarray(0,2).toString()).toBe('PK');
- await page.goto('/contact/');await expect(page.getByRole('link',{name:'Download CV (DOCX)',exact:true})).toHaveAttribute('href','/downloads/Yibo_Ma_CV.docx');
+ const response=await page.request.get('/Personal_CV/downloads/Yibo_Ma_CV.docx');expect(response.status()).toBe(200);expect((await response.body()).subarray(0,2).toString()).toBe('PK');
+ await page.goto('/Personal_CV/contact/');await expect(page.getByRole('link',{name:'Download CV (DOCX)',exact:true})).toHaveAttribute('href','/Personal_CV/downloads/Yibo_Ma_CV.docx');
 });
 test('gallery keyboard entry, media files and native video controls',async({page})=>{
- await page.goto('/projects/');
+ await page.goto('/Personal_CV/projects/');
  const cards=page.locator('.project-card-link');await expect(cards).toHaveCount(7);
  await expect(cards.locator('button, a, [tabindex="0"]')).toHaveCount(0);
  const tetris=page.getByRole('link',{name:'Tetris AI',exact:true});await tetris.focus();await page.keyboard.press('Enter');
@@ -91,7 +91,7 @@ test('gallery keyboard entry, media files and native video controls',async({page
 
 test('video poster, deliberate playback, stable layout and exclusive playback',async({page})=>{
  const requestedVideos:string[]=[];page.on('request',request=>{if(/\.mp4(?:\?|$)/.test(request.url()))requestedVideos.push(request.url());});
- await page.goto('/projects/tetris/');
+ await page.goto('/Personal_CV/projects/tetris/');
  const video=page.locator('video');await video.scrollIntoViewIfNeeded();
  await expect(video).toHaveAttribute('poster',/demo-poster/);await expect(video).toHaveAttribute('width','460');await expect(video).toHaveAttribute('height','762');
  const poster=await page.request.get((await video.getAttribute('poster'))!);expect(poster.status()).toBe(200);
@@ -109,7 +109,7 @@ test('video poster, deliberate playback, stable layout and exclusive playback',a
 });
 
 for(const width of [390,1440]) test(`project images use browser zoom at ${width}px`,async({page})=>{
- await page.setViewportSize({width,height:900});await page.goto('/projects/tetris/');
+ await page.setViewportSize({width,height:900});await page.goto('/Personal_CV/projects/tetris/');
  const image=page.locator('.media-image img');await image.scrollIntoViewIfNeeded();
  await expect(image).toHaveAttribute('width','1705');await expect(image).toHaveAttribute('height','1279');
  await expect.poll(()=>image.evaluate(el=>(el as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
@@ -118,7 +118,7 @@ for(const width of [390,1440]) test(`project images use browser zoom at ${width}
 
 for(const width of [390,1440]) test(`bioreactor image sequence and image loading at ${width}px`,async({page})=>{
  await page.setViewportSize({width,height:900});await page.emulateMedia({reducedMotion:'reduce'});
- await page.goto('/projects/');await page.getByRole('link',{name:'Automated Bioreactor Control System',exact:true}).click();
+ await page.goto('/Personal_CV/projects/');await page.getByRole('link',{name:'Automated Bioreactor Control System',exact:true}).click();
  await expect(page).toHaveURL(/\/projects\/bioreactor\//);await page.reload();
  await expect(page.locator('.media-item')).toHaveCount(4);await expect(page.locator('video')).toHaveCount(0);
  const captions=page.locator('.media-item figcaption');
@@ -135,9 +135,9 @@ for(const width of [390,1440]) test(`bioreactor image sequence and image loading
 });
 
 test('requested gallery order and grouped desktop media rows',async({page})=>{
- await page.setViewportSize({width:1440,height:1000});await page.goto('/projects/');
+ await page.setViewportSize({width:1440,height:1000});await page.goto('/Personal_CV/projects/');
  await expect(page.locator('.project-card h2')).toHaveText(['Input Overlay Desktop','Tetris AI','Sun-Glare Detection Model','Automated Bioreactor Control System','Language-Model-Based Label-and-Value Matcher','MultiPlay SDK','Super Happy Space 2.0']);
- await page.goto('/projects/input-overlay/');
+ await page.goto('/Personal_CV/projects/input-overlay/');
  for(const group of ['modes','settings']){
   const frames=await page.locator(`[data-media-group="${group}"] .media-frame`).all();expect(frames.length).toBe(3);
   const bounds=await Promise.all(frames.map(frame=>frame.boundingBox()));
@@ -147,15 +147,15 @@ test('requested gallery order and grouped desktop media rows',async({page})=>{
  await expect(page.locator('[data-media-group="modes"] .media-label')).toHaveText(['Compact gaming','WASD + modifiers','Single row']);
  await expect(page.locator('[data-media-group="settings"] .media-label')).toHaveText(['Appearance','Layout','Behaviour']);
  const tray=page.locator('[data-media-group="tray"] img');await tray.scrollIntoViewIfNeeded();expect((await tray.boundingBox())!.width).toBeLessThanOrEqual(280);
- await page.goto('/projects/tetris/');
+ await page.goto('/Personal_CV/projects/tetris/');
  const video=await page.locator('.media-video').boundingBox(),ranking=await page.locator('.media-image').boundingBox();
  expect(ranking!.x).toBeGreaterThan(video!.x+video!.width);expect(Math.abs(ranking!.y-video!.y)).toBeLessThan(2);
  await expect(page.locator('.media-item figcaption').last()).toContainText('I placed second');
- await page.goto('/projects/sun-glare/');await expect(page.locator('[data-media-group="source-photos"] .media-item')).toHaveCount(4);
+ await page.goto('/Personal_CV/projects/sun-glare/');await expect(page.locator('[data-media-group="source-photos"] .media-item')).toHaveCount(4);
 });
 
 for(const width of [390,1440]) test(`Input Overlay native recordings, settings and workflow at ${width}px`,async({page})=>{
- await page.setViewportSize({width,height:900});await page.emulateMedia({reducedMotion:'reduce'});await page.goto('/projects/input-overlay/');await page.reload();
+ await page.setViewportSize({width,height:900});await page.emulateMedia({reducedMotion:'reduce'});await page.goto('/Personal_CV/projects/input-overlay/');await page.reload();
  const videos=page.locator('video');await expect(videos).toHaveCount(3);
  for(let index=0;index<3;index++){
   const video=videos.nth(index);await expect(video).toHaveAttribute('controls','');await expect(video).toHaveAttribute('preload','none');await expect(video).not.toHaveAttribute('autoplay');
@@ -178,7 +178,7 @@ for(const width of [390,1440]) test(`Input Overlay native recordings, settings a
 });
 
 for(const width of [390,1440]) test(`Sun-glare paper link, images and image loading at ${width}px`,async({page})=>{
- await page.setViewportSize({width,height:900});await page.emulateMedia({reducedMotion:'reduce'});await page.goto('/projects/');await page.getByRole('link',{name:'Sun-Glare Detection Model',exact:true}).click();await page.reload();
+ await page.setViewportSize({width,height:900});await page.emulateMedia({reducedMotion:'reduce'});await page.goto('/Personal_CV/projects/');await page.getByRole('link',{name:'Sun-Glare Detection Model',exact:true}).click();await page.reload();
  await expect(page.locator('.project-publication')).toContainText('Yibo Ma');
  await expect(page.getByRole('link',{name:/Read paper · DOI:/})).toHaveAttribute('href','https://doi.org/10.56028/aetr.12.1.1222.2024');
  await expect(page.locator('.media-image')).toHaveCount(5);

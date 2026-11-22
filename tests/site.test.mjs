@@ -17,10 +17,10 @@ for (const route of routes) test(`${route}: static content and complete contact 
 test('seven linked gallery posters and standalone project details are built',async()=>{
  const html=await readFile('dist/projects/index.html','utf8');
  for(const id of projectIds){
-  assert.ok(html.includes(`id="${id}"`));assert.ok(html.includes(`href="/projects/${id}/"`));
+  assert.ok(html.includes(`id="${id}"`));assert.ok(html.includes(`href="/Personal_CV/projects/${id}/"`));
   const detail=await readFile(`dist/projects/${id}/index.html`,'utf8');
   assert.match(detail,/My contribution/);assert.match(detail,/Technical approach/);
-  assert.match(detail,/href="\/projects\/"/);assert.match(detail,/href="\/projects\/" aria-current="page"/);
+  assert.match(detail,/href="\/Personal_CV\/projects\/"/);assert.match(detail,/href="\/Personal_CV\/projects\/" aria-current="page"/);
  }
  assert.equal((html.match(/<figcaption>/g)||[]).length,7);
  assert.match(html,/Illustrative event flow/); assert.match(html,/invented demonstration data/);
@@ -37,7 +37,7 @@ test('Tetris uploads are linked while empty projects retain a useful fallback',a
 });
 test('gallery follows the requested project order',async()=>{
  const html=await readFile('dist/projects/index.html','utf8');
- assert.deepEqual([...html.matchAll(/class="project-card-link" href="\/projects\/([^/]+)\//g)].map(match=>match[1]),['input-overlay','tetris','sun-glare','bioreactor','document-matcher','multiplay','super-happy-space']);
+ assert.deepEqual([...html.matchAll(/class="project-card-link" href="\/Personal_CV\/projects\/([^/]+)\//g)].map(match=>match[1]),['input-overlay','tetris','sun-glare','bioreactor','document-matcher','multiplay','super-happy-space']);
 });
 test('sun-glare paper DOI and five supplied images are included',async()=>{
  const html=await readFile('dist/projects/sun-glare/index.html','utf8');assert.match(html,/href="https:\/\/doi.org\/10.56028\/aetr.12.1.1222.2024"/);
@@ -65,4 +65,23 @@ test('CV-backed background includes modules, scores, awards and experience',asyn
 test('palette text contrast meets WCAG AA',()=>{
  const luminance=hex=>{const c=hex.match(/\w\w/g).map(x=>parseInt(x,16)/255).map(x=>x<=.04045?x/12.92:((x+.055)/1.055)**2.4);return c[0]*.2126+c[1]*.7152+c[2]*.0722;};
  for(const background of ['0B1018','151D29'])for(const text of ['F2F5FA','B7C1D0','81D8F7','A8A0FF','8CD6BE','F1CB7B','EDA9C5','91C5FF'])assert.ok((luminance(text)+.05)/(luminance(background)+.05)>=4.5,`${text} on ${background}`);
+});
+
+// Check emitted URLs rather than assuming the bundler applied the repository base.
+test('all local HTML and CSS URLs resolve inside the GitHub Pages base',async()=>{
+ const files=await readdir('dist',{recursive:true});
+ const publicFiles=new Set(files.map(file=>file.replaceAll('\\','/')));
+ let checked=0;
+ for(const file of files.filter(file=>/\.(html|css)$/.test(file))){
+  const content=await readFile(join('dist',file),'utf8');
+  const urls=file.endsWith('.html')?[...content.matchAll(/(?:href|src|poster)="([^"#][^"]*)"/g)].map(match=>match[1]):[...content.matchAll(/url\(["']?([^)'"\s]+)["']?\)/g)].map(match=>match[1]);
+  for(const value of urls){
+   if(/^(?:[a-z][a-z0-9+.-]*:|\/\/)/i.test(value))continue;
+   const url=new URL(value,'https://yiboma2333.github.io/Personal_CV/'+file.replaceAll('\\','/'));
+   assert.ok(url.pathname.startsWith('/Personal_CV/'),file+': '+value);
+   const path=decodeURIComponent(url.pathname.slice('/Personal_CV/'.length));
+   assert.ok(publicFiles.has(!path || path.endsWith('/')?path+'index.html':path),file+': missing '+value);checked++;
+  }
+ }
+ assert.ok(checked>100);
 });

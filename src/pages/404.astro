@@ -1,4 +1,5 @@
 ---
+import { sitePath } from '../utils/paths';
 import Layout from '../layouts/Layout.astro';
 ---
-<Layout title="Page not found" description="This page could not be found. Return to Yibo Ma’s portfolio."><section class="shell page-heading error-page"><p class="eyebrow">404 · Page not found</p><h1>A missing<br />connection<span class="accent">.</span></h1><p>The page may have moved, or the address may be incorrect.</p><a class="text-link" href="/">Return home</a></section></Layout>
+<Layout title="Page not found" description="This page could not be found. Return to Yibo Ma’s portfolio."><section class="shell page-heading error-page"><p class="eyebrow">404 · Page not found</p><h1>A missing<br />connection<span class="accent">.</span></h1><p>The page may have moved, or the address may be incorrect.</p><a class="text-link" href={sitePath('/')}>Return home</a></section></Layout>

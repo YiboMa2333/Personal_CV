@@ -1,4 +1,5 @@
 ---
+import { sitePath } from '../../utils/paths';
 import Layout from '../../layouts/Layout.astro';
 import ProjectMedia from '../../components/ProjectMedia.astro';
 import ProjectVisual from '../../components/ProjectVisual.astro';
@@ -9,7 +10,7 @@ const { project } = Astro.props;
 ---
 <Layout title={project.title} description={project.summary} theme="projects">
   <article class="shell project-detail">
-    <a class="back-link" href="/projects/">All projects</a>
+    <a class="back-link" href={sitePath('/projects/')}>All projects</a>
     <header class="page-heading detail-heading"><p class="eyebrow">{project.category}{project.ongoing && <span class="ongoing"> · Ongoing development</span>}</p><h1>{project.title}<span class="accent">.</span></h1><p>{project.purpose}</p>
       <div class="project-resource-links">{project.source && <a class="text-link" href={project.source} target="_blank" rel="noopener noreferrer">{project.sourceLabel ?? 'View source code on GitHub'}</a>}{project.links?.map(link=><a class="text-link" href={link.href} target="_blank" rel="noopener noreferrer">{link.label}</a>)}</div>
     </header>
@@ -20,6 +21,6 @@ const { project } = Astro.props;
       <div class="project-explanation"><div><h3>My contribution</h3><p>{project.contribution}</p></div><div><h3>{project.ongoing ? 'Current status' : 'Result'}</h3><p>{project.outcome}</p></div></div>
       <h3 class="technology-heading">Technology and methods</h3><p class="tech-list">{project.technologies.join(' / ')}</p><details><summary>Technical approach</summary><p>{project.detail}</p></details>
     </section>
-    <nav class="other-projects" aria-label="Other projects"><h2>Keep exploring</h2><div>{projects.filter(other=>other.id!==project.id).map(other=><a href={`/projects/${other.id}/`}>{other.short}</a>)}</div></nav>
+    <nav class="other-projects" aria-label="Other projects"><h2>Keep exploring</h2><div>{projects.filter(other=>other.id!==project.id).map(other=><a href={sitePath(`/projects/${other.id}/`)}>{other.short}</a>)}</div></nav>
   </article>
 </Layout>

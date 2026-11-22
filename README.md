@@ -60,18 +60,21 @@ Images use the browser?s normal page zoom without additional enlargement control
 
 The Sun-Glare Detection page links to Yibo Ma’s paper through [DOI 10.56028/aetr.12.1.1222.2024](https://doi.org/10.56028/aetr.12.1.1222.2024). Authorship, title and the qualitative findings were checked against the [publisher’s abstract](https://madison-proceedings.com/index.php/aetr/article/view/2968). Its media records include a supplied detector-output image and four source photographs; the visible detection confidence is not presented as model accuracy. The abstract pipeline remains clearly labelled as an illustration.
 
-## Cloudflare Pages
+## GitHub Pages
 
-1. Commit the source and `package-lock.json`, then push to your GitHub repository when ready.
-2. Connect the repository to Cloudflare Pages.
-3. Set production branch `main`, build command `npm run build`, output directory `dist`, and Node version `24` (also declared in `.node-version`).
-4. Deploy through Cloudflare. This project needs no adapter, functions, credentials or runtime bindings.
+The production URL is https://yiboma2333.github.io/Personal_CV/. Astro uses static output, site `https://yiboma2333.github.io`, base `/Personal_CV` and trailing slashes. No adapter or server runtime is needed.
 
-Do not use SPA redirects: Astro emits a separate HTML file for every route, allowing direct access and refresh. No canonical domain or sitemap is configured until the production URL is known. Nothing is published by local build commands.
+One-time setup: open repository **Settings ? Pages ? Source ? GitHub Actions**. Then push this configuration to `main`, or run **Deploy to GitHub Pages** from the Actions tab. The workflow installs locked npm dependencies through the official Astro action, runs type checks, builds into `dist`, runs static regression tests and uploads the Pages artifact. A separate job deploys to the `github-pages` environment with only Pages/OIDC write permissions. Production deployments are serialised without cancelling an active deployment.
+
+Run `npm ci`, `npm run check`, `npm run build`, `npm test` and `npm run test:browser` locally. Preview at http://127.0.0.1:4321/Personal_CV/. Direct routes and refresh use the emitted HTML files; no SPA redirects are needed. Local builds do not publish anything.
+
+Use `sitePath` from [src/utils/paths.ts](src/utils/paths.ts) for hand-written internal URLs, including public downloads and favicon paths. Keep data paths independent of the hosting prefix. Astro/Vite automatically prefixes imported project media, bundled graphics scripts and local fonts; do not manually prepend the base to those imports.
+
+Official references: [Astro GitHub Pages deployment](https://docs.astro.build/en/guides/deploy/github/), [Astro action](https://github.com/withastro/action), [GitHub custom Pages workflows](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages). Repository Pages settings and the hosted deployment must be verified on GitHub after the workflow is pushed.
 
 ## Design and API references
 
-Original code-drawn diagrams use no Lusion assets. [Lusion](https://lusion.co/) informed the interaction direction. Implementation references: [Astro islands](https://docs.astro.build/en/concepts/islands/), [Astro TypeScript](https://docs.astro.build/en/guides/typescript/), [Three.js](https://threejs.org/docs/), [Motion JavaScript](https://motion.dev/docs/quick-start), [reduced motion](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion), and [Cloudflare Astro deployment](https://developers.cloudflare.com/pages/framework-guides/deploy-an-astro-site/).
+Original code-drawn diagrams use no Lusion assets. [Lusion](https://lusion.co/) informed the interaction direction. Implementation references: [Astro islands](https://docs.astro.build/en/concepts/islands/), [Astro TypeScript](https://docs.astro.build/en/guides/typescript/), [Three.js](https://threejs.org/docs/), [Motion JavaScript](https://motion.dev/docs/quick-start), [reduced motion](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion), and [Astro GitHub Pages deployment](https://docs.astro.build/en/guides/deploy/github/).
 
 The public READMEs of the [document matcher](https://github.com/YiboMa2333/Language-Model-Based-Label-and-Value-Matcher), [Input Overlay Desktop](https://github.com/YiboMa2333/Input_Overlay_on_desktop) and [Tetris AI](https://github.com/YiboMa2333/TetrisAI) were reviewed. Tetris provides a gameplay video, not assessed coursework source. Input Overlay is an independent adaptation of [univrsal/input-overlay](https://github.com/univrsal/input-overlay), with its GPL-2.0-only status documented upstream; no upstream code or assets are bundled here. Document-matcher sample company records are not public and are not included.
 
