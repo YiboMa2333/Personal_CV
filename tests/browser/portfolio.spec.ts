@@ -88,3 +88,39 @@ test('gallery keyboard entry, media files and native video controls',async({page
  await expect(page.getByRole('link',{name:'View Tetris AI gameplay demo',exact:true})).toHaveAttribute('href','https://github.com/YiboMa2333/TetrisAI');
  await page.getByRole('link',{name:'All projects',exact:true}).click();await expect(page).toHaveURL(/\/projects\/$/);
 });
+
+test('video poster, deliberate playback, stable layout and exclusive playback',async({page})=>{
+ const requestedVideos:string[]=[];page.on('request',request=>{if(/\.mp4(?:\?|$)/.test(request.url()))requestedVideos.push(request.url());});
+ await page.goto('/projects/tetris/');
+ const video=page.locator('video');await video.scrollIntoViewIfNeeded();
+ await expect(video).toHaveAttribute('poster',/demo-poster/);await expect(video).toHaveAttribute('width','460');await expect(video).toHaveAttribute('height','762');
+ const poster=await page.request.get((await video.getAttribute('poster'))!);expect(poster.status()).toBe(200);
+ expect(await video.evaluate(element=>(element as HTMLVideoElement).paused)).toBe(true);
+ expect(requestedVideos).toEqual([]);
+ const before=await video.boundingBox();expect(before).not.toBeNull();expect(before!.width/before!.height).toBeCloseTo(460/762,2);
+ await video.focus();await page.keyboard.press('Space');
+ await expect.poll(()=>video.evaluate(element=>(element as HTMLVideoElement).currentTime),{timeout:15000}).toBeGreaterThan(0);
+ const after=await video.boundingBox();expect(Math.abs(after!.height-before!.height)).toBeLessThan(1);
+ // Exercise the shared handler with a second real video without adding duplicate public media.
+ await page.evaluate(()=>{const original=document.querySelector('video')!;const second=original.cloneNode(true) as HTMLVideoElement;second.id='second-test-video';second.muted=true;document.querySelector('.media-gallery')!.append(second);});
+ const second=page.locator('#second-test-video');await second.focus();await page.keyboard.press('Space');
+ await expect.poll(()=>second.evaluate(element=>(element as HTMLVideoElement).currentTime),{timeout:15000}).toBeGreaterThan(0);
+ expect(await page.locator('video').first().evaluate(element=>(element as HTMLVideoElement).paused)).toBe(true);
+});
+
+for(const width of [390,1440]) test(`image enlargement, keyboard scrolling and focus restoration at ${width}px`,async({page})=>{
+ await page.setViewportSize({width,height:900});await page.emulateMedia({reducedMotion:'reduce'});await page.goto('/projects/tetris/');
+ const opener=page.getByRole('button',{name:/Enlarge image: Projected coursework leaderboard/});
+ const thumbnail=opener.locator('img');await expect(thumbnail).toHaveAttribute('width','1705');await expect(thumbnail).toHaveAttribute('height','1279');await expect(thumbnail).toHaveAttribute('loading','lazy');
+ await opener.focus();await page.keyboard.press('Enter');
+ const dialog=page.getByRole('dialog',{name:'Project image'});await expect(dialog).toBeVisible();
+ const close=dialog.getByRole('button',{name:'Close image'});await expect(close).toBeFocused();
+ await expect(dialog.locator('img')).toHaveAttribute('alt','Projected coursework leaderboard with Yibo Ma listed in second place.');
+ await expect.poll(()=>dialog.locator('img').evaluate(image=>(image as HTMLImageElement).naturalWidth)).toBe(1705);
+ await page.keyboard.press('Tab');const region=dialog.getByRole('region');await expect(region).toBeFocused();
+ await dialog.getByRole('button',{name:'Show actual size'}).click();await expect(dialog.getByRole('button',{name:'Fit image'})).toHaveAttribute('aria-pressed','true');await region.focus();
+ await page.keyboard.press('ArrowRight');await expect.poll(()=>region.evaluate(element=>element.scrollLeft)).toBeGreaterThan(0);
+ await page.keyboard.press('Escape');await expect(dialog).not.toBeVisible();await expect(opener).toBeFocused();
+ await page.keyboard.press('Space');await expect(dialog).toBeVisible();await close.click();await expect(opener).toBeFocused();
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+});

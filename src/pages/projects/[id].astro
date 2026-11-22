@@ -16,7 +16,7 @@ const { project } = Astro.props;
     <ProjectMedia project={project} />
     <section class="detail-approach" aria-labelledby="approach-title"><h2 id="approach-title">The idea</h2><ProjectVisual id={project.id} />
       <div class="project-explanation"><div><h3>My contribution</h3><p>{project.contribution}</p></div><div><h3>{project.ongoing ? 'Current status' : 'Result'}</h3><p>{project.outcome}</p></div></div>
-      <p class="tech-list">{project.technologies.join(' / ')}</p><details><summary>Technical approach</summary><p>{project.detail}</p></details>
+      <h3 class="technology-heading">Technology and methods</h3><p class="tech-list">{project.technologies.join(' / ')}</p><details><summary>Technical approach</summary><p>{project.detail}</p></details>
     </section>
     <nav class="other-projects" aria-label="Other projects"><h2>Keep exploring</h2><div>{projects.filter(other=>other.id!==project.id).map(other=><a href={`/projects/${other.id}/`}>{other.short}</a>)}</div></nav>
   </article>

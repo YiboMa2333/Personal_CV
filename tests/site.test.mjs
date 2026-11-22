@@ -30,6 +30,9 @@ test('Tetris uploads are linked while empty projects retain a useful fallback',a
  const tetris=await readFile('dist/projects/tetris/index.html','utf8');
  assert.match(tetris,/<video controls/);assert.match(tetris,/preload="none"/);assert.match(tetris,/Coursework leaderboard showing Yibo Ma in second place/);
  assert.doesNotMatch(tetris,/autoplay/);
+ assert.match(tetris,/poster="[^"]+demo-poster/);assert.match(tetris,/width="460" height="762"/);
+ assert.match(tetris,/alt="Projected coursework leaderboard with Yibo Ma listed in second place\." width="1705" height="1279"/);
+ assert.match(tetris,/<dialog id="image-viewer"/);
  const empty=await readFile('dist/projects/input-overlay/index.html','utf8');assert.match(empty,/Project recordings and screenshots will be added here/);assert.doesNotMatch(empty,/<video/);
 });
 test('private references are excluded from build',async()=>{

@@ -8,11 +8,20 @@ export const navigation = [
   { href: '/background/', label: 'Background' }, { href: '/contact/', label: 'Contact Information' },
 ];
 export const cv = { href: '/downloads/Yibo_Ma_CV.docx', label: 'Download CV (DOCX)' };
+interface MediaBase { src: string; caption: string }
+export interface ProjectImage extends MediaBase { kind: 'image'; alt: string }
+export interface ProjectVideo extends MediaBase {
+  kind: 'video'; poster: string; width: number; height: number;
+  transcript?: string;
+  captions?: { src: string; language: string; label: string };
+}
+export type ProjectMediaRecord = ProjectImage | ProjectVideo;
 export interface Project {
   id: string; title: string; short: string; category: string; ongoing?: boolean;
   summary: string; mediaFolder: string;
   purpose: string; contribution: string; outcome: string; technologies: string[];
   detail: string; source?: string; sourceLabel?: string;
+  media?: ProjectMediaRecord[];
 }
 export const projects: Project[] = [
   { id: 'super-happy-space', title: 'Super Happy Space 2.0', short: 'Super Happy Space', category: 'Accessible play · Local AI', ongoing: true,
@@ -46,6 +55,10 @@ export const projects: Project[] = [
     detail: 'Win32 Raw Input supplies keyboard and mouse events, while Direct2D and DirectWrite draw the overlay. The browser illustration only responds when its preview has focus; it is not the native application.',
     source: 'https://github.com/YiboMa2333/Input_Overlay_on_desktop' },
   { id: 'tetris', title: 'Tetris AI', short: 'Tetris AI', category: 'Search · Heuristic evaluation',
+    media: [
+      { kind: 'video', src: '/media/Tetris-AI/demo.mp4', poster: '/media/Tetris-AI/demo-poster.webp', width: 460, height: 762, caption: 'Coursework gameplay demonstration: the Tetris agent selects and plays block placements automatically.' },
+      { kind: 'image', src: '/media/Tetris-AI/2nd_Place.jpg', alt: 'Projected coursework leaderboard with Yibo Ma listed in second place.', caption: 'Coursework leaderboard showing Yibo Ma in second place.' },
+    ],
     summary: 'A two-step-lookahead agent using board heuristics. Second place among approximately 200 students.', mediaFolder: 'Tetris-AI',
     purpose: 'Choosing Tetris placements by evaluating the board that each move leaves behind.',
     contribution: 'Developed a two-step-lookahead agent using weighted board heuristics, including holes, bumpiness, gaps and height.',
@@ -54,6 +67,12 @@ export const projects: Project[] = [
     detail: 'The agent considers a placement and a subsequent move, then compares board features through a weighted heuristic. The recreated illustration explains the features; it does not run the original agent or reproduce its exact weights.',
     source: 'https://github.com/YiboMa2333/TetrisAI', sourceLabel: 'View Tetris AI gameplay demo' },
   { id: 'bioreactor', title: 'Automated Bioreactor Control System', short: 'Bioreactor control', category: 'Embedded systems · Feedback control',
+    media: [
+      { kind: 'image', src: '/media/Automated-Bioreactor-Control-System/block_diagram.png', alt: 'Block diagram linking a real-time controller, power supply, heater and thermistor feedback.', caption: 'Heating-control architecture and thermistor feedback diagram.' },
+      { kind: 'image', src: '/media/Automated-Bioreactor-Control-System/Heater.jpg', alt: 'Hand-drawn thermistor voltage-divider connections to an Arduino Nano, with a 10-kilohm resistor.', caption: 'Thermistor sensing circuit and Arduino Nano connections.' },
+      { kind: 'image', src: '/media/Automated-Bioreactor-Control-System/Sensor.jpg', alt: 'Hand-drawn Arduino Nano and MOSFET circuit controlling a heater with a 12-volt supply.', caption: 'MOSFET-controlled heater circuit and Arduino Nano connections.' },
+      { kind: 'image', src: '/media/Automated-Bioreactor-Control-System/HeatingResult.png', alt: 'Supplied temperature-versus-time plot with temperature on the vertical axis and minutes on the horizontal axis.', caption: 'Supplied heating temperature-versus-time plot.' },
+    ],
     summary: 'Arduino heating control that translates sensor voltages into a proportional feedback response.', mediaFolder: 'Automated-Bioreactor-Control-System',
     purpose: 'Controlling heating using measurements from an analogue temperature-sensing system.',
     contribution: 'Implemented sensor-voltage conversion and proportional heating control on Arduino.',

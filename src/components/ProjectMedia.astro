@@ -3,12 +3,29 @@ import type { Project } from '../data/portfolio';
 import { getProjectMedia } from '../data/media';
 interface Props { project: Project }
 const { project } = Astro.props;
-const media = getProjectMedia(project);
+const media = await getProjectMedia(project);
 ---
 {media.length > 0 ? <section class="project-media" aria-labelledby="media-title">
   <div class="section-heading"><h2 id="media-title">Inside the project</h2><p>Images and demonstrations.</p></div>
-  <div class="media-gallery">{media.map(item=><figure class="media-item">
-    {item.kind === 'video' ? <video controls playsinline preload="none" aria-label={item.caption}><source src={item.url} type={item.mime} /><p>Your browser cannot play this video. <a href={item.url}>Download the video</a>.</p></video> : <a href={item.url} target="_blank" rel="noopener noreferrer" aria-label={`Open full image: ${item.caption}`}><img src={item.url} alt={item.caption} loading="lazy" decoding="async" /></a>}
-    <figcaption>{item.caption}</figcaption>
+  <div class="media-gallery">{media.map((item,index)=><figure class:list={['media-item', { 'media-video': item.kind === 'video' }]}>
+    {item.kind === 'video' ? <>
+      <video controls playsinline preload="none" poster={item.posterUrl} width={item.width} height={item.height} style={`aspect-ratio:${item.width}/${item.height};--video-ratio:${item.width/item.height}`} aria-label={item.caption} aria-describedby={`media-caption-${index}`}>
+        <source src={item.url} type={item.mime} />
+        {item.captions && <track kind="captions" src={item.captionUrl} srclang={item.captions.language} label={item.captions.label} default />}
+        <p>Your browser cannot play this video. <a href={item.url}>Download the video</a>.</p>
+      </video>
+      {item.transcriptUrl && <a class="transcript-link" href={item.transcriptUrl}>Read recording transcript</a>}
+    </> : <><button type="button" class="media-enlarge" data-src={item.original} data-enlarge aria-haspopup="dialog" aria-controls="image-viewer" data-caption={item.caption} data-alt={item.alt} data-width={item.width} data-height={item.height} aria-label={`Enlarge image: ${item.alt}`}>
+      <img src={item.url} alt={item.alt} width={item.width} height={item.height} loading="lazy" decoding="async" />
+      <span class="enlarge-hint">Enlarge image</span>
+    </button><noscript><a href={item.original}>Open original image</a></noscript></>}
+    <figcaption id={`media-caption-${index}`}>{item.caption}</figcaption>
   </figure>)}</div>
+  {media.some(item=>item.kind==='image') && <dialog id="image-viewer" class="image-viewer" aria-labelledby="image-viewer-title" aria-describedby="image-viewer-caption">
+    <div class="viewer-toolbar"><h2 id="image-viewer-title">Project image</h2><div><button type="button" data-zoom-viewer aria-pressed="false">Show actual size</button><button type="button" data-close-viewer autofocus>Close image</button></div></div>
+    <p class="viewer-instructions">Show actual size to inspect details with scrolling. Press Escape to close.</p>
+    <div class="viewer-scroll" tabindex="0" role="region" aria-label="Full-resolution image. Scroll horizontally or vertically to inspect details."></div>
+    <p id="image-viewer-caption"></p>
+  </dialog>}
+  <script>import '../scripts/media';</script>
 </section> : <p class="media-pending">Project recordings and screenshots will be added here. Explore the explanatory visual and technical approach below.</p>}

@@ -1,19 +1,33 @@
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
 import type { Project } from './portfolio';
 
-const uploads = import.meta.glob<string>('/media/**/*.{png,jpg,jpeg,webp,avif,mp4,webm,PNG,JPG,JPEG,WEBP,AVIF,MP4,WEBM}', { query: '?url', import: 'default', eager: true });
-export interface ProjectMedia { url: string; caption: string; kind: 'image' | 'video'; mime: string }
-const captions: Record<string,string> = {
-  '/media/Tetris-AI/demo.mp4': 'Tetris AI · Coursework gameplay demonstration',
-  '/media/Tetris-AI/2nd_Place.jpg': 'Coursework leaderboard showing Yibo Ma in second place.',
-};
-export function getProjectMedia(project: Project): ProjectMedia[] {
-  return Object.entries(uploads)
-    .filter(([path]) => path.startsWith(`/media/${project.mediaFolder}/`))
-    .sort(([a],[b]) => a.localeCompare(b, 'en'))
-    .map(([path,url]) => {
-      const extension=path.split('.').pop()!.toLowerCase();
-      const video=['mp4','webm'].includes(extension);
-      const filename=path.split('/').pop()!.replace(/\.[^.]+$/,'').replace(/[_-]+/g,' ');
-      return {url, caption:captions[path] ?? `${project.short} · ${filename}`,kind:video?'video':'image',mime:video?`video/${extension}`:`image/${extension==='jpg'?'jpeg':extension}`};
-    });
+const images = import.meta.glob<{ default: ImageMetadata }>('/media/**/*.{png,jpg,jpeg,webp,avif,PNG,JPG,JPEG,WEBP,AVIF}', { eager: true });
+const files = import.meta.glob<string>('/media/**/*.{mp4,webm,vtt,txt,MP4,WEBM}', { query: '?url', import: 'default', eager: true });
+function imageAt(path: string): ImageMetadata {
+  const image = images[path]?.default;
+  if (!image) throw new Error(`Project media image is missing: ${path}`);
+  return image;
+}
+function fileAt(path: string): string {
+  const file = files[path];
+  if (!file) throw new Error(`Project media file is missing: ${path}`);
+  return file;
+}
+export async function getProjectMedia(project: Project) {
+  return Promise.all((project.media ?? []).map(async item => {
+    if (item.kind === 'image') {
+      const original = imageAt(item.src);
+      const image = await getImage({ src: original, format: 'webp', quality: original.format === 'png' ? 100 : 90 });
+      return { ...item, url: image.src, original: original.src, width: original.width, height: original.height };
+    }
+    if (item.width <= 0 || item.height <= 0) throw new Error(`Invalid video dimensions: ${item.src}`);
+    const poster = imageAt(item.poster);
+    if (poster.width !== item.width || poster.height !== item.height) throw new Error(`Poster and video dimensions differ: ${item.src}`);
+    return { ...item, url: fileAt(item.src), posterUrl: poster.src,
+      transcriptUrl: item.transcript ? fileAt(item.transcript) : undefined,
+      captionUrl: item.captions ? fileAt(item.captions.src) : undefined,
+      mime: item.src.toLowerCase().endsWith('.webm') ? 'video/webm' : 'video/mp4',
+    };
+  }));
 }
