@@ -1,0 +1,16 @@
+---
+import type { getProjectMedia } from '../data/media';
+interface Props { item: Awaited<ReturnType<typeof getProjectMedia>>[number]; index: number }
+const { item, index } = Astro.props;
+---
+<figure class:list={['media-item', { 'media-video': item.kind === 'video' }]}>
+  {item.kind === 'video' ? <>
+    <div class="media-frame"><video controls playsinline preload="none" poster={item.posterUrl} width={item.width} height={item.height} style={`aspect-ratio:${item.width}/${item.height};--video-ratio:${item.width/item.height};--video-width:${item.width}px`} aria-label={item.title ?? item.caption} aria-describedby={`media-caption-${index}`}>
+      <source src={item.url} type={item.mime} />
+      {item.captions && <track kind="captions" src={item.captionUrl} srclang={item.captions.language} label={item.captions.label} default />}
+      <p>Your browser cannot play this video. <a href={item.url}>Download the video</a>.</p>
+    </video></div>
+    {item.transcriptUrl && <a class="transcript-link" href={item.transcriptUrl}>Read recording transcript</a>}
+  </> : <div class="media-image"><div class="media-frame"><img src={item.url} alt={item.alt} width={item.width} height={item.height} loading="lazy" decoding="async" /></div></div>}
+  <figcaption id={`media-caption-${index}`}>{item.title && <strong class="media-label">{item.title}</strong>}<span>{item.caption}</span></figcaption>
+</figure>

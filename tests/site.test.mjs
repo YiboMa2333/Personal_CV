@@ -28,21 +28,25 @@ test('seven linked gallery posters and standalone project details are built',asy
 });
 test('Tetris uploads are linked while empty projects retain a useful fallback',async()=>{
  const tetris=await readFile('dist/projects/tetris/index.html','utf8');
- assert.match(tetris,/<video controls/);assert.match(tetris,/preload="none"/);assert.match(tetris,/Coursework leaderboard showing Yibo Ma in second place/);
+ assert.match(tetris,/<video controls/);assert.match(tetris,/preload="none"/);assert.match(tetris,/I placed second among approximately 200 students/);
  assert.doesNotMatch(tetris,/autoplay/);
  assert.match(tetris,/poster="[^"]+demo-poster/);assert.match(tetris,/width="460" height="762"/);
- assert.match(tetris,/alt="Projected coursework leaderboard with Yibo Ma listed in second place\." width="1705" height="1279"/);
- assert.match(tetris,/<dialog id="image-viewer"/);
+ assert.match(tetris,/alt="Ranking table with me in second place\." width="1705" height="1279"/);
+ assert.doesNotMatch(tetris,/data-enlarge|image-viewer|Enlarge image/);
  const empty=await readFile('dist/projects/multiplay/index.html','utf8');assert.match(empty,/Project recordings and screenshots will be added here/);assert.doesNotMatch(empty,/<video/);
+});
+test('gallery follows the requested project order',async()=>{
+ const html=await readFile('dist/projects/index.html','utf8');
+ assert.deepEqual([...html.matchAll(/class="project-card-link" href="\/projects\/([^/]+)\//g)].map(match=>match[1]),['input-overlay','tetris','sun-glare','bioreactor','document-matcher','multiplay','super-happy-space']);
 });
 test('sun-glare paper DOI and five supplied images are included',async()=>{
  const html=await readFile('dist/projects/sun-glare/index.html','utf8');assert.match(html,/href="https:\/\/doi.org\/10.56028\/aetr.12.1.1222.2024"/);
  assert.match(html,/Evaluating the Impact of Online Database Integration/);assert.match(html,/not the model’s overall accuracy/);
- assert.equal((html.match(/data-enlarge /g)||[]).length,5);assert.doesNotMatch(html,/Project recordings and screenshots will be added here/);
+ assert.equal((html.match(/class="media-image"/g)||[]).length,5);assert.doesNotMatch(html,/Project recordings and screenshots will be added here/);
 });
 test('Input Overlay includes native workflow, three recordings and four screenshots',async()=>{
  const html=await readFile('dist/projects/input-overlay/index.html','utf8');
- assert.equal((html.match(/<video controls/g)||[]).length,3);assert.equal((html.match(/data-enlarge /g)||[]).length,4);
+ assert.equal((html.match(/<video controls/g)||[]).length,3);assert.equal((html.match(/class="media-image"/g)||[]).length,4);
  for(const text of ['Open the tray controls','Position the overlay','Customise and apply','Lock and use','Ctrl+Alt+F8','GPL-2.0-only','Preview release on GitHub','Windows build and test workflow'])assert.ok(html.includes(text),text);
  assert.doesNotMatch(html,/autoplay|Project recordings and screenshots will be added here/);
 });

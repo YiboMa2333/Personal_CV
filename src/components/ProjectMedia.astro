@@ -1,31 +1,19 @@
 ---
 import type { Project } from '../data/portfolio';
 import { getProjectMedia } from '../data/media';
+import MediaItem from './MediaItem.astro';
 interface Props { project: Project }
 const { project } = Astro.props;
 const media = await getProjectMedia(project);
+const definitions = project.mediaGroups ?? [{ id: 'all', title: '', layout: 'two' as const }];
+const groups = definitions.map(group => ({ ...group, items: media.map((item,index)=>({item,index})).filter(({item})=>(item.group ?? 'all')===group.id) })).filter(group=>group.items.length);
+if (groups.reduce((count,group)=>count+group.items.length,0) !== media.length) throw new Error(`Unassigned media group in ${project.id}`);
 ---
-{media.length > 0 ? <section class="project-media" aria-labelledby="media-title">
+{media.length > 0 ? <section class="project-media" data-project={project.id} aria-labelledby="media-title">
   <div class="section-heading"><h2 id="media-title">Inside the project</h2><p>Images and demonstrations.</p></div>
-  <div class="media-gallery">{media.map((item,index)=><figure class:list={['media-item', { 'media-video': item.kind === 'video' }]}>
-    {item.kind === 'video' ? <>
-      <video controls playsinline preload="none" poster={item.posterUrl} width={item.width} height={item.height} style={`aspect-ratio:${item.width}/${item.height};--video-ratio:${item.width/item.height};--video-width:${item.width}px`} aria-label={item.caption} aria-describedby={`media-caption-${index}`}>
-        <source src={item.url} type={item.mime} />
-        {item.captions && <track kind="captions" src={item.captionUrl} srclang={item.captions.language} label={item.captions.label} default />}
-        <p>Your browser cannot play this video. <a href={item.url}>Download the video</a>.</p>
-      </video>
-      {item.transcriptUrl && <a class="transcript-link" href={item.transcriptUrl}>Read recording transcript</a>}
-    </> : <><button type="button" class="media-enlarge" style={`--image-width:${item.width}px`} data-src={item.original} data-enlarge aria-haspopup="dialog" aria-controls="image-viewer" data-caption={item.caption} data-alt={item.alt} data-width={item.width} data-height={item.height} aria-label={`Enlarge image: ${item.alt}`}>
-      <img src={item.url} alt={item.alt} width={item.width} height={item.height} loading="lazy" decoding="async" />
-      <span class="enlarge-hint">Enlarge image</span>
-    </button><noscript><a href={item.original}>Open original image</a></noscript></>}
-    <figcaption id={`media-caption-${index}`}>{item.caption}</figcaption>
-  </figure>)}</div>
-  {media.some(item=>item.kind==='image') && <dialog id="image-viewer" class="image-viewer" aria-labelledby="image-viewer-title" aria-describedby="image-viewer-caption">
-    <div class="viewer-toolbar"><h2 id="image-viewer-title">Project image</h2><div><button type="button" data-zoom-viewer aria-pressed="false">Show actual size</button><button type="button" data-close-viewer autofocus>Close image</button></div></div>
-    <p class="viewer-instructions">Show actual size to inspect details with scrolling. Press Escape to close.</p>
-    <div class="viewer-scroll" tabindex="0" role="region" aria-label="Full-resolution image. Scroll horizontally or vertically to inspect details."></div>
-    <p id="image-viewer-caption"></p>
-  </dialog>}
+  <div class="media-gallery media-groups">{groups.map(group=><section class={`media-group media-group--${group.layout}`} data-media-group={group.id} aria-labelledby={group.title ? `group-${group.id}` : undefined}>
+    {group.title && <header class="media-group-heading"><h3 id={`group-${group.id}`}>{group.title}</h3>{group.description && <p>{group.description}</p>}</header>}
+    <div class="media-grid">{group.items.map(({item,index})=><MediaItem item={item} index={index} />)}</div>
+  </section>)}</div>
   <script>import '../scripts/media';</script>
 </section> : <p class="media-pending">Project recordings and screenshots will be added here. Explore the explanatory visual and technical approach below.</p>}
