@@ -101,7 +101,7 @@ Prioritise project contributions, technical reasoning and demonstrated results. 
 - Never overwrite unrelated user edits.
 - Avoid destructive Git commands.
 - Follow the user’s instructions for commits and pushes.
-- Prepare the static site for GitHub Pages under `/Personal_CV/` using GitHub Actions.
+- Prepare the static site for Cloudflare hosting at `https://yiboma.com.de/` with root-relative paths.
 - Use `npm run build` and the `dist` output directory.
 - Publish or change hosting settings only when authorised.
 

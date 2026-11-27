@@ -12,15 +12,18 @@ for (const route of routes) test(`${route}: static content and complete contact 
   assert.equal((html.match(/<h1\b/g)||[]).length,1);
   const footer=html.split('<footer')[1];
   for(const detail of ['Contact Information','yibo.ma.25@ucl.ac.uk','tel:+447960513809','London, UK','linkedin.com/in/yibo-ma-b053a843b','github.com/YiboMa2333']) assert.ok(footer.includes(detail),detail);
-  assert.doesNotMatch(html,/reference\/|Sorting Algorithm Performance Study/);
+  assert.doesNotMatch(html,/reference\/|Sorting Algorithm Performance Study|\/Personal_CV\/|yiboma2333\.github\.io/);
+  const pathname=route==='404.html'?'/404/':route==='index.html'?'/':route.endsWith('/index.html')?'/'+route.slice(0,-'index.html'.length):'/'+route;
+  assert.ok(html.includes(`rel="canonical" href="https://yiboma.com.de${pathname}"`));
+  assert.ok(html.includes(`property="og:url" content="https://yiboma.com.de${pathname}"`));
 });
 test('seven linked gallery posters and standalone project details are built',async()=>{
  const html=await readFile('dist/projects/index.html','utf8');
  for(const id of projectIds){
-  assert.ok(html.includes(`id="${id}"`));assert.ok(html.includes(`href="/Personal_CV/projects/${id}/"`));
+  assert.ok(html.includes(`id="${id}"`));assert.ok(html.includes(`href="/projects/${id}/"`));
   const detail=await readFile(`dist/projects/${id}/index.html`,'utf8');
   assert.match(detail,/My contribution/);assert.match(detail,/Technical approach/);
-  assert.match(detail,/href="\/Personal_CV\/projects\/"/);assert.match(detail,/href="\/Personal_CV\/projects\/" aria-current="page"/);
+  assert.match(detail,/href="\/projects\/"/);assert.match(detail,/href="\/projects\/" aria-current="page"/);
  }
  assert.equal((html.match(/<figcaption>/g)||[]).length,7);
  assert.match(html,/Illustrative event flow/); assert.match(html,/invented demonstration data/);
@@ -37,7 +40,7 @@ test('Tetris uploads are linked while empty projects retain a useful fallback',a
 });
 test('gallery follows the requested project order',async()=>{
  const html=await readFile('dist/projects/index.html','utf8');
- assert.deepEqual([...html.matchAll(/class="project-card-link" href="\/Personal_CV\/projects\/([^/]+)\//g)].map(match=>match[1]),['input-overlay','tetris','sun-glare','bioreactor','document-matcher','multiplay','super-happy-space']);
+ assert.deepEqual([...html.matchAll(/class="project-card-link" href="\/projects\/([^/]+)\//g)].map(match=>match[1]),['input-overlay','tetris','sun-glare','bioreactor','document-matcher','multiplay','super-happy-space']);
 });
 test('sun-glare paper DOI and five supplied images are included',async()=>{
  const html=await readFile('dist/projects/sun-glare/index.html','utf8');assert.match(html,/href="https:\/\/doi.org\/10.56028\/aetr.12.1.1222.2024"/);
@@ -68,7 +71,7 @@ test('palette text contrast meets WCAG AA',()=>{
 });
 
 // Check emitted URLs rather than assuming the bundler applied the repository base.
-test('all local HTML and CSS URLs resolve inside the GitHub Pages base',async()=>{
+test('all local HTML and CSS URLs resolve at the production root',async()=>{
  const files=await readdir('dist',{recursive:true});
  const publicFiles=new Set(files.map(file=>file.replaceAll('\\','/')));
  let checked=0;
@@ -77,9 +80,9 @@ test('all local HTML and CSS URLs resolve inside the GitHub Pages base',async()=
   const urls=file.endsWith('.html')?[...content.matchAll(/(?:href|src|poster)="([^"#][^"]*)"/g)].map(match=>match[1]):[...content.matchAll(/url\(["']?([^)'"\s]+)["']?\)/g)].map(match=>match[1]);
   for(const value of urls){
    if(/^(?:[a-z][a-z0-9+.-]*:|\/\/)/i.test(value))continue;
-   const url=new URL(value,'https://yiboma2333.github.io/Personal_CV/'+file.replaceAll('\\','/'));
-   assert.ok(url.pathname.startsWith('/Personal_CV/'),file+': '+value);
-   const path=decodeURIComponent(url.pathname.slice('/Personal_CV/'.length));
+   const url=new URL(value,'https://yiboma.com.de/'+file.replaceAll('\\','/'));
+   assert.ok(url.pathname.startsWith('/'),file+': '+value);
+   const path=decodeURIComponent(url.pathname.slice('/'.length));
    assert.ok(publicFiles.has(!path || path.endsWith('/')?path+'index.html':path),file+': missing '+value);checked++;
   }
  }
